@@ -4,25 +4,16 @@
 #include <fstream>
 #include <string>
 
-FileQueue::FileQueue()
-{
-	//count = 0;
-}
+FileQueue::FileQueue() = default;
 
 FileQueue::FileQueue(std::string p)
 {
 	path = p;
-	//count = 0;
 }
 
-void FileQueue::AddItem(std::string fn)
+void FileQueue::AddItem(std::string file_name)
 {
-	{
-		FileQueueItem* newFile;
-		newFile = new FileQueueItem(fn);
-
-		files.push_back(*newFile);
-	}
+	files.emplace_back(file_name);
 }
 
 int FileQueue::Count()
@@ -62,6 +53,7 @@ void FileQueue::Store()
 	{
 		dFile << (*it).Path() << '\t';
 	}
+	dFile << terminal();
 
 	dFile.close();
 }
@@ -91,9 +83,13 @@ void FileQueue::Load()
 void FileQueue::Remove()
 {
 	if (std::filesystem::exists(qname()))
-		remove(qname().c_str());
+		std::filesystem::remove(qname());
 }
 
+bool FileQueue::IsClosed()
+{
+	return files.back().Path() == terminal();
+}
 
 // FileQueItem
 

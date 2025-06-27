@@ -15,7 +15,8 @@ public:
 class FileQueue
 {
 	std::string path;
-	std::string qname() { return path + "\\_queue.csv"; };
+	std::string qname() const { return path + "\\_queue.csv"; };
+	std::string terminal() const { return ":eof"; };
 	std::list<FileQueueItem> files;
 public:
 	FileQueue();
@@ -29,4 +30,5 @@ public:
 	void Load();
 	// Remove queue file from disc
 	void Remove();
+	bool IsClosed();
 };

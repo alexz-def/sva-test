@@ -29,10 +29,10 @@ bool compress_file(const std::string& input_filename, const std::string& output_
     }
 
     // Буферы для чтения и записи
-    char input_buffer[CHUNK_SIZE];
-    char output_buffer[CHUNK_SIZE];
+    char* in_buffer = new char[CHUNK_SIZE];
+    char* out_buffer = new char[CHUNK_SIZE];
 
-    strm.next_out = reinterpret_cast<Bytef*>(output_buffer);
+    strm.next_out = reinterpret_cast<Bytef*>(out_buffer);
     strm.avail_out = CHUNK_SIZE;
 
     int flush = Z_NO_FLUSH;
@@ -40,13 +40,15 @@ bool compress_file(const std::string& input_filename, const std::string& output_
 
     do
     {
-        input_file.read(input_buffer, CHUNK_SIZE);
+        //input_file.read(input_buffer, CHUNK_SIZE);
+        input_file.read(in_buffer, CHUNK_SIZE);
 
         if (input_file.eof())
             flush = Z_FINISH;
 
         strm.avail_in = input_file.gcount();
-        strm.next_in = reinterpret_cast<Bytef*>(input_buffer);
+        //strm.next_in = reinterpret_cast<Bytef*>(input_buffer);
+        strm.next_in = reinterpret_cast<Bytef*>(in_buffer);
 
         do
         {
@@ -60,8 +62,8 @@ bool compress_file(const std::string& input_filename, const std::string& output_
             }
             if (strm.avail_out == 0)
             {
-                output_file.write(output_buffer, CHUNK_SIZE);
-                strm.next_out = reinterpret_cast<Bytef*>(output_buffer);
+                output_file.write(out_buffer, CHUNK_SIZE);
+                strm.next_out = reinterpret_cast<Bytef*>(out_buffer);
                 strm.avail_out = CHUNK_SIZE;
             }
 
@@ -72,7 +74,7 @@ bool compress_file(const std::string& input_filename, const std::string& output_
     // Запись оставшихся данных
     if (strm.avail_out < CHUNK_SIZE)
     {
-        output_file.write(output_buffer, CHUNK_SIZE - strm.avail_out);
+        output_file.write(out_buffer, CHUNK_SIZE - strm.avail_out);
     }
 
     deflateEnd(&strm);

@@ -1,5 +1,6 @@
 ﻿//
-// Archiver.cpp
+// Archiver.cpp - interface application.
+// Creates a queue-file containing a list of files in the folder and subfolders.
 //
 #include <iostream>
 #include <filesystem>
@@ -9,12 +10,19 @@ bool buildQuery(std::string topFolderName);
 
 namespace fs = std::filesystem;
 
-int main()
+int main(int argc, char* argv[])
 {
     std::string folderName;
 
-    std::cout << "Input folder name:\n";
-    std::cin >> folderName;
+    if (argc == 1)
+    {
+        std::cout << "Input folder name:\n";
+        std::cin >> folderName;
+    }
+    else
+    {
+        folderName = argv[1];
+    }
 
     if (fs::exists(folderName))
     {
